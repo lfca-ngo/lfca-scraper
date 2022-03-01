@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "es6"
+  },
+  "include": ["src/**/*"]
+}

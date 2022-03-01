@@ -1,0 +1,9 @@
+{
+  "execMap": {
+    "ts": "node -r ts-node/register"
+  },
+  "ext": "js,json,ts",
+  "ignore": [".git", "dist/", "node_modules/", "src/**/*.test.ts"],
+  "restartable": "rs",
+  "watch": ["src/"]
+}
