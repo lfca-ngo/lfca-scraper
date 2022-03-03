@@ -89,14 +89,14 @@ export async function scrapeMEPs(
           politicalGroup: mep.politicalGroup || '',
         }
       } catch (e) {
-        console.error(`Failed to scrape MEP with ID ${mep.id}`)
+        console.error(`\nFailed to scrape MEP with ID ${mep.id}`)
       }
+
+      // Wait to avoid beeing blocked
+      await waitRandom(2)
     }
 
     process.stdout.write(`\r${i + 1} of ${allMEPs.length} MEPs scraped`)
-
-    // Wait to avoid beeing blocked
-    await waitRandom(2)
   }
 
   console.info('\nScraping MEPs ✔')

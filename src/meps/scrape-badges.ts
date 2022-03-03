@@ -51,7 +51,7 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
         }
       })
     } catch (e) {
-      console.error(`Failed to scrape delegations for locale ${locale}`)
+      console.error(`\nFailed to scrape delegations for locale ${locale}`)
     }
 
     // Scrape Committees
@@ -78,16 +78,16 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
           )
         }
       })
+
+      // Wait to avoid beeing blocked
+      await waitRandom(2)
     } catch (e) {
-      console.error(`Failed to scrape committees for locale ${locale}`)
+      console.error(`\nFailed to scrape committees for locale ${locale}`)
     }
 
     process.stdout.write(
       `\r${i + 1} of ${BADGE_LOCALIZATIONS.length} locales scraped`
     )
-
-    // Wait to avoid beeing blocked
-    await waitRandom(2)
   }
 
   console.info('\nScraping badges ✔')
