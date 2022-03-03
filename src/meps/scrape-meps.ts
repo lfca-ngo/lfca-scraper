@@ -2,6 +2,7 @@ import axios from 'axios'
 import cheerio from 'cheerio'
 import { XMLParser } from 'fast-xml-parser'
 
+import { waitRandom } from '../utils'
 import {
   ALL_MEPS_XML_SRC,
   MEP_DETAIL_PAGE_BASE_URL,
@@ -9,6 +10,7 @@ import {
 } from './config'
 import countries from './input/countries.json'
 import { parseEmailHref } from './utils'
+
 interface EnrichedMEP {
   badges: string[]
   country: string
@@ -84,6 +86,9 @@ export async function scrapeMEPs(): Promise<EnrichedMEP[]> {
     })
 
     process.stdout.write(`\r${i + 1} of ${allMEPs.length} MEPs scraped`)
+
+    // Wait to avoid beeing blocked
+    await waitRandom(2)
   }
 
   console.info('\nScraping MEPs ✔')

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 
+import { waitRandom } from '../utils'
 import {
   BADGE_LOCALIZATIONS,
   COMMITTEE_DETAIL_PAGE_URL,
@@ -74,6 +75,9 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
     process.stdout.write(
       `\r${i + 1} of ${BADGE_LOCALIZATIONS.length} locales scraped`
     )
+
+    // Wait to avoid beeing blocked
+    await waitRandom(2)
   }
 
   console.info('\nScraping badges ✔')
