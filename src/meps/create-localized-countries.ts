@@ -19,6 +19,7 @@ export async function createLocalizedCountries(
   mepsById: Record<string, MEP>
 ): Promise<CountryProps[]> {
   console.info('\nCreating localized countries...')
+  console.info(`${LOCALES.length} localizations configured`)
 
   const allCountriesMap = Object.keys(mepsById).reduce(
     (countriesMap, mepId) => {
