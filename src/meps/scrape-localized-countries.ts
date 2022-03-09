@@ -15,10 +15,10 @@ interface CountryProps {
   label: LocalizedCountryLabel
 }
 
-export async function createLocalizedCountries(
+export async function scrapeLocalizedCountries(
   mepsById: Record<string, MEP>
 ): Promise<CountryProps[]> {
-  console.info('\nCreating localized countries...')
+  console.info('\nScraping localized countries...')
   console.info(`${LOCALES.length} localizations configured`)
 
   const allCountriesMap = Object.keys(mepsById).reduce(
@@ -97,7 +97,7 @@ export async function createLocalizedCountries(
     // Wait to avoid beeing blocked
     await waitRandom(2)
 
-    process.stdout.write(`\r${i + 1} of ${LOCALES.length} locales processed`)
+    process.stdout.write(`\r${i + 1} of ${LOCALES.length} locales scraped`)
   }
 
   console.info('\nCreating localized countries ✔')

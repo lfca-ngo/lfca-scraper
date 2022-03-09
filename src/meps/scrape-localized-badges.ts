@@ -14,10 +14,10 @@ interface LocalizedBadgeMap {
   }
 }
 
-export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
+export async function scrapeLocalizedBadges(): Promise<LocalizedBadgeMap> {
   const localizedBadgeMap: LocalizedBadgeMap = {}
 
-  console.info('\nScraping badges...')
+  console.info('\nScraping localized badges...')
   console.info(`${LOCALES.length} localizations configured`)
 
   for (const [i, locale] of LOCALES.entries()) {

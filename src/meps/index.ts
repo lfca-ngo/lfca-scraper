@@ -7,8 +7,8 @@ import {
   MEPS_FILE_NAME,
   SKIP_EXISTING_MEPS,
 } from './config'
-import { createLocalizedCountries } from './create-localized-countries'
-import { scrapeBadges } from './scrape-badges'
+import { scrapeLocalizedBadges } from './scrape-localized-badges'
+import { scrapeLocalizedCountries } from './scrape-localized-countries'
 import { MEP, scrapeMEPs } from './scrape-meps'
 
 export async function run() {
@@ -33,14 +33,11 @@ export async function run() {
     `./output/${COUNTRIES_FILE_NAME}`
   )
 
-  const localizedCountries = await createLocalizedCountries(newMEPData)
-  fs.writeFileSync(
-    countriesFilePath,
-    JSON.stringify(localizedCountries, null, 2)
-  )
+  const countries = await scrapeLocalizedCountries(newMEPData)
+  fs.writeFileSync(countriesFilePath, JSON.stringify(countries, null, 2))
 
   // Scrape badges
-  const badges = await scrapeBadges()
+  const badges = await scrapeLocalizedBadges()
   fs.writeFileSync(
     path.resolve(__dirname, `./output/${BADGES_FILE_NAME}`),
     JSON.stringify(badges, null, 2)
