@@ -1,11 +1,11 @@
 import axios from 'axios'
-import cheerio from 'cheerio'
+import { load } from 'cheerio'
 
 import { waitRandom } from '../utils'
 import {
-  BADGE_LOCALIZATIONS,
   COMMITTEE_DETAIL_PAGE_URL,
   DELEGATION_DETAIL_PAGE_URL,
+  LOCALES,
 } from './config'
 
 interface LocalizedBadgeMap {
@@ -18,9 +18,9 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
   const localizedBadgeMap: LocalizedBadgeMap = {}
 
   console.info('\nScraping badges...')
-  console.info(`${BADGE_LOCALIZATIONS.length} localizations configured`)
+  console.info(`${LOCALES.length} localizations configured`)
 
-  for (const [i, locale] of BADGE_LOCALIZATIONS.entries()) {
+  for (const [i, locale] of LOCALES.entries()) {
     // Scrape Delegations
     try {
       const delegationDetailsHTML = (
@@ -29,7 +29,7 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
         )
       ).data
 
-      const $DELEGATION = cheerio.load(delegationDetailsHTML)
+      const $DELEGATION = load(delegationDetailsHTML)
 
       const delegationElements = $DELEGATION('.erpl_delegations-list-item')
 
@@ -60,7 +60,7 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
         await axios.get(COMMITTEE_DETAIL_PAGE_URL.replace('{{locale}}', locale))
       ).data
 
-      const $COMMITTEE = cheerio.load(committeeDetailsHTML)
+      const $COMMITTEE = load(committeeDetailsHTML)
 
       const committeeElements = $COMMITTEE('.erpl_badge-committee')
 
@@ -85,9 +85,7 @@ export async function scrapeBadges(): Promise<LocalizedBadgeMap> {
       console.error(`\nFailed to scrape committees for locale ${locale}`)
     }
 
-    process.stdout.write(
-      `\r${i + 1} of ${BADGE_LOCALIZATIONS.length} locales scraped`
-    )
+    process.stdout.write(`\r${i + 1} of ${LOCALES.length} locales scraped`)
   }
 
   console.info('\nScraping badges ✔')

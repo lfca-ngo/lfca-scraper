@@ -1,19 +1,18 @@
 import axios from 'axios'
-import cheerio from 'cheerio'
+import { load } from 'cheerio'
 import { XMLParser } from 'fast-xml-parser'
 
 import { waitRandom } from '../utils'
 import {
-  ALL_MEPS_XML_SRC,
+  ALL_MEPS_XML_URL,
   MEP_DETAIL_PAGE_BASE_URL,
   MEP_PHOTO_BASE_URL,
 } from './config'
-import countries from './input/countries.json'
+import countryCodesByEnName from './input/country-codes-by-en-name.json'
 import { parseEmailHref } from './utils'
 
 export interface MEP {
   badges: string[]
-  country: string
   countryCode: string
   email: string
   fullName: string
@@ -29,11 +28,14 @@ export async function scrapeMEPs(
   console.info('\nScraping MEPs...')
 
   // Fetch all MEPs as XML
-  const allMEPsResp = await axios.get(ALL_MEPS_XML_SRC, {
-    headers: {
-      Accept: 'application/xml',
-    },
-  })
+  const allMEPsResp = await axios.get(
+    ALL_MEPS_XML_URL.replace('{{locale}}', 'en'),
+    {
+      headers: {
+        Accept: 'application/xml',
+      },
+    }
+  )
 
   // Parse XML to JSON
   const xmlParser = new XMLParser()
@@ -48,7 +50,7 @@ export async function scrapeMEPs(
           await axios.get(`${MEP_DETAIL_PAGE_BASE_URL}/${mep.id}`)
         ).data
 
-        const $MEP = cheerio.load(mepDetailsHTML)
+        const $MEP = load(mepDetailsHTML)
 
         const email = parseEmailHref($MEP('.link_email').attr('href') || '')
         if (!email) {
@@ -72,14 +74,13 @@ export async function scrapeMEPs(
           badges.push(badgeId)
         })
 
-        const countryCode = countries[mep.country]
+        const countryCode = countryCodesByEnName[mep.country]
         if (!countryCode) {
           console.error(`\nCould not find countryCode for ${mep.country}`)
         }
 
         mepMap[mep.id] = {
           badges,
-          country: mep.country || '',
           countryCode,
           email,
           fullName: mep.fullName || '',
