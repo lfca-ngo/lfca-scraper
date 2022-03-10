@@ -2,7 +2,7 @@ import axios from 'axios'
 import { load } from 'cheerio'
 import { XMLParser } from 'fast-xml-parser'
 
-import { waitRandom } from '../utils'
+import { capitalizeFirstLetter, waitRandom } from '../utils'
 import {
   ALL_MEPS_XML_URL,
   MEP_DETAIL_PAGE_BASE_URL,
@@ -15,11 +15,16 @@ export interface MEP {
   badges: string[]
   countryCode: string
   email: string
+  facebook?: string
   fullName: string
   id: string
   imageUrl: string
+  instagram?: string
   nationalPoliticalGroup: string
+  phone?: string
   politicalGroup: string
+  twitter?: string
+  website?: string
 }
 
 export async function scrapeMEPs(
@@ -58,8 +63,17 @@ export async function scrapeMEPs(
             `\nCould not scrape email for ${mep.fullName} (ID: ${mep.id})`
           )
         }
+        const facebook = $MEP('.link_fb').attr('href') || undefined
+        const instagram = $MEP('.link_instagram').attr('href') || undefined
+        const twitter = $MEP('.link_twitt').attr('href') || undefined
+        const website = $MEP('.link_website').attr('href') || undefined
 
-        const imageUrl = `${MEP_PHOTO_BASE_URL}/${
+        const phone = $MEP('.erpl_contact-card-list a .t-x')
+          .first()
+          .text()
+          .trim()
+
+        const imageUrl = `${MEP_PHOTO_BASE_URL}${
           $MEP('.erpl_image-frame > span > img').attr('src') || ''
         }`
         if (!imageUrl) {
@@ -83,11 +97,16 @@ export async function scrapeMEPs(
           badges,
           countryCode,
           email,
-          fullName: mep.fullName || '',
-          id: mep.id || '',
+          facebook,
+          fullName: capitalizeFirstLetter(mep.fullName),
+          id: mep.id,
           imageUrl,
-          nationalPoliticalGroup: mep.nationalPoliticalGroup || '',
-          politicalGroup: mep.politicalGroup || '',
+          instagram,
+          nationalPoliticalGroup: mep.nationalPoliticalGroup,
+          phone,
+          politicalGroup: mep.politicalGroup,
+          twitter,
+          website,
         }
       } catch (e) {
         console.error(`\nFailed to scrape MEP with ID ${mep.id}`)
