@@ -1,65 +1,45 @@
-import axios from 'axios'
-import cheerio from 'cheerio'
 import fs from 'fs'
 import path from 'path'
 
-import { ALL_MEPS_XML_SRC, MEP_DETAIL_PAGE_BASE_URL } from './config'
-import { parseEmailHref } from './utils'
-
-interface EnrichedMEP {
-  badges: string[]
-  country: string
-  email: string
-  fullName: string
-  id: string
-  nationalPoliticalGroup: string
-  politicalGroup: string
-}
+import {
+  BADGES_FILE_NAME,
+  COUNTRIES_FILE_NAME,
+  MEPS_FILE_NAME,
+  SKIP_EXISTING_MEPS,
+} from './config'
+import { scrapeLocalizedBadges } from './scrape-localized-badges'
+import { scrapeLocalizedCountries } from './scrape-localized-countries'
+import { MEP, scrapeMEPs } from './scrape-meps'
 
 export async function run() {
-  // Fetch all MEPs as XML
-  const allMEPs = (await axios.get(ALL_MEPS_XML_SRC)).data.list
+  // Scrape MEPs
+  const mepsFilePath = path.resolve(__dirname, `./output/${MEPS_FILE_NAME}`)
 
-  console.info(`${allMEPs.length} MEPs found`)
-
-  const enrichedMEPs: EnrichedMEP[] = []
-  const badgesMap = {}
-  // Fetch details for each MEP
-  for (const [i, mep] of allMEPs.entries()) {
-    const detailsHTML = (
-      await axios.get(`${MEP_DETAIL_PAGE_BASE_URL}/${mep.persId}`)
-    ).data
-    const $ = cheerio.load(detailsHTML)
-    const email = parseEmailHref($('.link_email').attr('href') || '')
-
-    const badges: string[] = []
-    $('.badges').each((i, el) => {
-      const badgeId = $(el).find('.erpl_badge').text()
-      const badgeName = $(el).find('.erpl_committee').text()
-      badgesMap[badgeId] = badgeName
-      badges.push(badgeId)
-    })
-
-    enrichedMEPs.push({
-      badges,
-      country: mep.countryLabel || '',
-      email,
-      fullName: mep.fullName || '',
-      id: mep.persId || '',
-      nationalPoliticalGroup: mep.nationalPoliticalGroupLabel || '',
-      politicalGroup: mep.politicalGroupLabel || '',
-    })
-
-    process.stdout.write(`\r${i + 1} of ${allMEPs.length} MEPs scraped`)
+  let existingMEPData: Record<string, MEP> = {}
+  if (SKIP_EXISTING_MEPS) {
+    try {
+      existingMEPData = JSON.parse(fs.readFileSync(mepsFilePath, 'utf8'))
+    } catch (e) {
+      console.info('No existing MEPs present')
+    }
   }
 
-  // Save enrichedMEPs and badgesMap to JSON files
-  fs.writeFileSync(
-    path.resolve(__dirname, './output/meps-list.json'),
-    JSON.stringify(enrichedMEPs, null, 2)
+  const newMEPData = await scrapeMEPs(existingMEPData)
+  fs.writeFileSync(mepsFilePath, JSON.stringify(newMEPData, null, 2))
+
+  // Create countries map
+  const countriesFilePath = path.resolve(
+    __dirname,
+    `./output/${COUNTRIES_FILE_NAME}`
   )
+
+  const countries = await scrapeLocalizedCountries(newMEPData)
+  fs.writeFileSync(countriesFilePath, JSON.stringify(countries, null, 2))
+
+  // Scrape badges
+  const badges = await scrapeLocalizedBadges()
   fs.writeFileSync(
-    path.resolve(__dirname, './output/badges-map.json'),
-    JSON.stringify(badgesMap, null, 2)
+    path.resolve(__dirname, `./output/${BADGES_FILE_NAME}`),
+    JSON.stringify(badges, null, 2)
   )
 }
