@@ -109,7 +109,7 @@ export async function scrapeMEPs(
           website,
         }
       } catch (e) {
-        console.error(`\nFailed to scrape MEP with ID ${mep.id}`)
+        console.error(`\nFailed to scrape MEP ${mep.fullName} (ID: ${mep.id})`)
       }
 
       // Wait to avoid beeing blocked
