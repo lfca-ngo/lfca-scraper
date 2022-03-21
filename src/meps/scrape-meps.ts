@@ -9,6 +9,7 @@ import {
   MEP_PHOTO_BASE_URL,
 } from './config'
 import countryCodesByEnName from './input/country-codes-by-en-name.json'
+import shortPoliticalGroupByName from './input/short-political-group-by-name.json'
 import { parseEmailHref } from './utils'
 
 export interface MEP {
@@ -99,12 +100,15 @@ export async function scrapeMEPs(
           email,
           facebook,
           fullName: capitalizeFirstLetter(mep.fullName),
-          id: mep.id,
+          id: `MEP_${mep.id}`,
           imageUrl,
           instagram,
-          nationalPoliticalGroup: mep.nationalPoliticalGroup,
+          nationalPoliticalGroup:
+            shortPoliticalGroupByName[mep.nationalPoliticalGroup] ||
+            mep.nationalPoliticalGroup,
           phone,
-          politicalGroup: mep.politicalGroup,
+          politicalGroup:
+            shortPoliticalGroupByName[mep.politicalGroup] || mep.politicalGroup,
           twitter,
           website,
         }

@@ -101,7 +101,7 @@ export async function scrapeMdBs(
           email: '', // Will be added in a separate step
           facebook,
           fullName: mdb.name,
-          id: mdb.id,
+          id: `MdB_${mdb.id}`,
           imageCredits,
           imageUrl: imageUrl || mdb.img,
           instagram,
