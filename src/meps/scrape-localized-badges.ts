@@ -34,7 +34,7 @@ export async function scrapeLocalizedBadges(): Promise<LocalizedBadgeMap> {
       const delegationElements = $DELEGATION('.erpl_delegations-list-item')
 
       delegationElements.each((i, el) => {
-        const badgeLink = $DELEGATION(el).find('a')
+        const badgeLink = $DELEGATION(el).find('a').first()
         const localizedBadgeName = badgeLink.text()
         const badgeId = badgeLink.attr('href')?.split('/').pop()?.toUpperCase()
         if (badgeId) {

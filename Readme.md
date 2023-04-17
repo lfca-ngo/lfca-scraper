@@ -2,7 +2,8 @@
 
 ## Available scripts
 
-- `scrape:politicians`: Scrape politicians from the EU parliament
+- `start`: Prompts for specific scrapers to be run
+- `test`: Run unit tests
 - `lint`: Runs linter
 - `lint:fix`: Runs linter and tries to fix all errors
 
