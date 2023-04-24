@@ -74,9 +74,9 @@ export async function scrapeMEPs(
           .text()
           .trim()
 
-        const imageUrl = `${MEP_PHOTO_BASE_URL}${
+        const imageUrl =
           $MEP('.erpl_image-frame > span > img').attr('src') || ''
-        }`
+
         if (!imageUrl) {
           console.error(
             `\nCould not scrape imageUrl for ${mep.fullName} (ID: ${mep.id})`
