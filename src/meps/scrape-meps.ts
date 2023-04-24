@@ -3,11 +3,7 @@ import { load } from 'cheerio'
 import { XMLParser } from 'fast-xml-parser'
 
 import { capitalizeFirstLetter, waitRandom } from '../utils'
-import {
-  ALL_MEPS_XML_URL,
-  MEP_DETAIL_PAGE_BASE_URL,
-  MEP_PHOTO_BASE_URL,
-} from './config'
+import { ALL_MEPS_XML_URL, MEP_DETAIL_PAGE_BASE_URL } from './config'
 import countryCodesByEnName from './input/country-codes-by-en-name.json'
 import shortPoliticalGroupByName from './input/short-political-group-by-name.json'
 import { parseEmailHref } from './utils'
@@ -74,9 +70,9 @@ export async function scrapeMEPs(
           .text()
           .trim()
 
-        const imageUrl = `${MEP_PHOTO_BASE_URL}${
+        const imageUrl =
           $MEP('.erpl_image-frame > span > img').attr('src') || ''
-        }`
+
         if (!imageUrl) {
           console.error(
             `\nCould not scrape imageUrl for ${mep.fullName} (ID: ${mep.id})`
